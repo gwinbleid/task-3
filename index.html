@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task 3</title>
+    <link rel = "stylesheet" type = "text/css" href = "style.css" />
+</head>
+<body>
+
+<section id="main">
+
+</section>
+
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/task-3/sw.js', { scope: '/task-3/' }).then(function(reg) {
+
+            if(reg.installing) {
+                console.log('Service worker installing');
+            } else if(reg.waiting) {
+                console.log('Service worker installed');
+            } else if(reg.active) {
+                console.log('Service worker active');
+            }
+        })
+            .catch(function(error) {
+                // registration failed
+                console.log('Registration failed with ' + error);
+            });
+    }
+
+    window.onload = function() {
+
+
+
+
+
+        fetch('https://api.songkick.com/api/3.0/events.json?apikey=V24zeBmnMf3f26iq&location=geo:53.9,27.5667')
+            .then(res => res.json())
+            .then(res => {
+                parseResults(res.resultsPage.results.event);
+                notify(res);
+            })
+            .catch(err => console.log(err));
+    };
+
+    function parseResults(data) {
+        let section = document.querySelector('#main');
+        section.innerHTML = data.map(item => {
+            return `
+                <div class="item">
+                    <h2>${item.displayName}</h2>
+                    <div class="information">
+                        <div class="place">
+                            <div>Place: ${item.venue.displayName}</div>
+                            <div>City: ${item.venue.metroArea.displayName}</div>
+                            <div>City: ${item.venue.metroArea.country.displayName}</div>
+                        </div>
+
+                        <div>
+                            <div>Date: ${item.start.date}</div>
+                            <div>Time: ${item.start.datetime}</div>
+                        </div>
+
+                        <div>
+                            <div>Artists ${getAllArtists(item.performance)}</div>
+                        </div>
+                    </div>
+                </div>
+            `
+        }).join('');
+    }
+
+    function notify(data) {
+
+    }
+
+    function getAllArtists(data) {
+        return data.map(item => {
+            return `<div class="artist">${item.displayName}</div>`
+        }).join('');
+    }
+</script>
+</body>
+</html>
