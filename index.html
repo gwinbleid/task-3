@@ -101,7 +101,7 @@
         } else if (Notification.permission !== 'denied') {
             Notification.requestPermission(function (permission) {
                 if (permission === "granted") {
-                    let notification = new Notification('Notification title', {
+                    let notification = new Notification(data.displayName, {
                         icon: './images/music.png',
                         body: "It's Just Testing Notification view that concert will happen less than 90 days",
                     });
