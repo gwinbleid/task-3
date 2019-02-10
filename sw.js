@@ -3,11 +3,11 @@ this.addEventListener('install', function(event) {
         caches.open('v1').then(function(cache) {
             return cache.addAll([
                 '/task-3/',
-                '/task-3/index.html',
-                '/task-3/style.css',
-                '/task-3/app.js',
-                '/task-3/images/bell.svg',
-                '/task-3/images/music.png',
+                'index.html',
+                'style.css',
+                'app.js',
+                'images/bell.svg',
+                'images/music.png',
                 'https://api.songkick.com/api/3.0/events.json?apikey=V24zeBmnMf3f26iq&location=geo:53.9,27.5667'
             ]);
         })
