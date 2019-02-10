@@ -16,6 +16,14 @@
 
 <script>
     if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (refreshing)
+                return;
+
+            window.location.reload();
+            refreshing = true;
+        });
+
         navigator.serviceWorker.register('sw.js', { scope: '/task-3/' }).then(function(reg) {
 
             if(reg.installing) {
@@ -58,10 +66,6 @@
                 case 14: sendNotification(data[i], 14);
                     break;
             }
-
-            if (diffDays < 90) {
-                sendSecondaryNotification(data[i]);
-            }
         });
     }
 
@@ -79,31 +83,7 @@
                 if (permission === "granted") {
                     let notification = new Notification(data.displayName, {
                         icon: './images/music.png',
-                        body: "Event will happen in ${daysCount} days",
-                    });
-                    notification.onclick = function () {
-                        window.open(`https://www.songkick.com/`);
-                    };
-                }
-            });
-        }
-    }
-
-    function sendSecondaryNotification(data) {
-        if ("Notification" in window && Notification.permission === "granted") {
-            let notification = new Notification(data.displayName, {
-                icon: './images/music.png',
-                body: `It's Just Testing Notification view that concert will happen less than 90 days`,
-            });
-            notification.onclick = function () {
-                window.open(`https://www.songkick.com/`);
-            };
-        } else if (Notification.permission !== 'denied') {
-            Notification.requestPermission(function (permission) {
-                if (permission === "granted") {
-                    let notification = new Notification(data.displayName, {
-                        icon: './images/music.png',
-                        body: "It's Just Testing Notification view that concert will happen less than 90 days",
+                        body: `Event will happen in ${daysCount} days`,
                     });
                     notification.onclick = function () {
                         window.open(`https://www.songkick.com/`);
