@@ -6,6 +6,9 @@
     <link rel = "stylesheet" type = "text/css" href = "style.css" />
 </head>
 <body>
+<header>
+    <h1>Calendar of Music events in Minsk</h1>
+</header>
 
 <section id="main">
 
@@ -29,57 +32,51 @@
             });
     }
 
-    window.onload = function() {
 
-
-
-
-
-        fetch('https://api.songkick.com/api/3.0/events.json?apikey=V24zeBmnMf3f26iq&location=geo:53.9,27.5667')
-            .then(res => res.json())
-            .then(res => {
-                parseResults(res.resultsPage.results.event);
-                notify(res);
-            })
-            .catch(err => console.log(err));
-    };
-
-    function parseResults(data) {
-        let section = document.querySelector('#main');
-        section.innerHTML = data.map(item => {
-            return `
-                <div class="item">
-                    <h2>${item.displayName}</h2>
-                    <div class="information">
-                        <div class="place">
-                            <div>Place: ${item.venue.displayName}</div>
-                            <div>City: ${item.venue.metroArea.displayName}</div>
-                            <div>City: ${item.venue.metroArea.country.displayName}</div>
-                        </div>
-
-                        <div>
-                            <div>Date: ${item.start.date}</div>
-                            <div>Time: ${item.start.datetime}</div>
-                        </div>
-
-                        <div>
-                            <div>Artists ${getAllArtists(item.performance)}</div>
-                        </div>
-                    </div>
-                </div>
-            `
-        }).join('');
-    }
 
     function notify(data) {
+        const today = new Date();
 
-    }
+        const dateArray = data.map(item => {
+            return new Date(item.start.date.replace( /-/g, `/`));
+        });
 
-    function getAllArtists(data) {
-        return data.map(item => {
-            return `<div class="artist">${item.displayName}</div>`
-        }).join('');
+        dateArray.forEach(item => {
+            const timeDiff = Math.abs(item.getTime() - today);
+            const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            if(diffDays <= 50) {
+                if (!("Notification" in window)) {
+                    alert("This browser does not support desktop notification");
+                }
+
+                else if (Notification.permission === "granted") {
+                    let notification = new Notification('Notification title', {
+                        icon: './images/music.png',
+                        body: "Hey there! You've been notified!",
+                    });
+
+                    notification.onclick = function () {
+                        window.open("http://stackoverflow.com/a/13328397/1269037");
+                    };
+                }
+                else if (Notification.permission !== 'denied') {
+                    Notification.requestPermission(function (permission) {
+                        if (permission === "granted") {
+                            let notification = new Notification('Notification title', {
+                                icon: './images/music.png',
+                                body: "Hey there! You've been notified!",
+                            });
+
+                            notification.onclick = function () {
+                                window.open("http://stackoverflow.com/a/13328397/1269037");
+                            };
+                        }
+                    });
+                }
+            }
+        });
     }
 </script>
+<script src="app.js"></script>
 </body>
 </html>
