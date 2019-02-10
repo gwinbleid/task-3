@@ -3,7 +3,7 @@ window.onload = function() {
         .then(res => res.json())
         .then(res => {
             parseResults(res.resultsPage.results.event);
-            notify(res.resultsPage.results.event);
+            checkedNotification(res.resultsPage.results.event);
         })
         .catch(err => console.log(err));
 };
@@ -36,7 +36,7 @@ function parseResults(data) {
 
                         <div class="notification_btn_container">
                             <div>Send notification</div>
-                            <button class="notificating_button"><img class="not_btn_img" src="images/bell.svg"/> </button>
+                            <button id="button-${item.id}" class="notificating_button red"><img class="not_btn_img" src="images/bell.svg"/> </button>
                         </div>
                     </div>
                 </div>
@@ -52,12 +52,29 @@ function parseResults(data) {
 }
 
 function writeToLocalStorage(id) {
-    console.log(id);
-    localStorage.setItem(id, id);
+    (localStorage.getItem(id) === id.toString()) ? localStorage.removeItem(id) : localStorage.setItem(id, id);
+    changeButtonColor(this.document.querySelector(`#button-${id}`));
 }
 
 function getAllArtists(data) {
     return data.map(item => {
         return `<div class="artist">${item.displayName}</div>`
     }).join('');
+}
+
+function checkedButtonColor(data) {
+    data.forEach(item => {
+        let elem = this.document.querySelector(`#button-${item}`);
+        changeButtonColor(elem);
+    });
+}
+
+function changeButtonColor(elem) {
+    if (elem.classList.contains('red')) {
+        elem.classList.remove('red');
+        elem.classList.add('green');
+    } else if (elem.classList.contains('green')) {
+        elem.classList.remove('green');
+        elem.classList.add('red');
+    }
 }

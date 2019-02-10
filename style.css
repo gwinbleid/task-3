@@ -58,10 +58,17 @@ section {
 }
 
 .notificating_button {
-    background: #c11321;
     padding: 5px;
     border-radius: 4px;
     margin-left: 10px;
+}
+
+.red {
+    background: #c11321;
+}
+
+.green {
+    background: #3b8427;
 }
 
 .notificating_button:hover {

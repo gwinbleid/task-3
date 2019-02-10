@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Task 3</title>
-    <link rel = "stylesheet" type = "text/css" href = "style.css" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
 </head>
 <body>
 <header>
@@ -34,47 +34,83 @@
 
 
 
-    function notify(data) {
-        const today = new Date();
+    function checkedNotification(data) {
+        let data2 = data.filter(item => localStorage.getItem(item.id));
+        checkedButtonColor(data2.map(item => item.id));
+        notifyMe(data2);
+    }
 
+    function notifyMe(data) {
+        const today = new Date();
         const dateArray = data.map(item => {
             return new Date(item.start.date.replace( /-/g, `/`));
         });
 
-        dateArray.forEach(item => {
+        dateArray.forEach((item, i) => {
             const timeDiff = Math.abs(item.getTime() - today);
             const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-            if(diffDays <= 50) {
-                if (!("Notification" in window)) {
-                    alert("This browser does not support desktop notification");
-                }
 
-                else if (Notification.permission === "granted") {
-                    let notification = new Notification('Notification title', {
-                        icon: './images/music.png',
-                        body: "Hey there! You've been notified!",
-                    });
+            switch(diffDays) {
+                case 3: sendNotification(data[i], 3);
+                    break;
+                case 7: sendNotification(data[i], 7);
+                    break;
+                case 14: sendNotification(data[i], 14);
+                    break;
+            }
 
-                    notification.onclick = function () {
-                        window.open("http://stackoverflow.com/a/13328397/1269037");
-                    };
-                }
-                else if (Notification.permission !== 'denied') {
-                    Notification.requestPermission(function (permission) {
-                        if (permission === "granted") {
-                            let notification = new Notification('Notification title', {
-                                icon: './images/music.png',
-                                body: "Hey there! You've been notified!",
-                            });
-
-                            notification.onclick = function () {
-                                window.open("http://stackoverflow.com/a/13328397/1269037");
-                            };
-                        }
-                    });
-                }
+            if (diffDays < 90) {
+                sendSecondaryNotification(data[i]);
             }
         });
+    }
+
+    function sendNotification(data, daysCount) {
+        if ("Notification" in window && Notification.permission === "granted") {
+            let notification = new Notification(data.displayName, {
+                icon: './images/music.png',
+                body: `Event will happen in ${daysCount} days`,
+            });
+            notification.onclick = function () {
+                window.open(`https://www.songkick.com/`);
+            };
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission(function (permission) {
+                if (permission === "granted") {
+                    let notification = new Notification(data.displayName, {
+                        icon: './images/music.png',
+                        body: "Event will happen in ${daysCount} days",
+                    });
+                    notification.onclick = function () {
+                        window.open(`https://www.songkick.com/`);
+                    };
+                }
+            });
+        }
+    }
+
+    function sendSecondaryNotification(data) {
+        if ("Notification" in window && Notification.permission === "granted") {
+            let notification = new Notification(data.displayName, {
+                icon: './images/music.png',
+                body: `It's Just Testing Notification view that concert will happen less than 90 days`,
+            });
+            notification.onclick = function () {
+                window.open(`https://www.songkick.com/`);
+            };
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission(function (permission) {
+                if (permission === "granted") {
+                    let notification = new Notification('Notification title', {
+                        icon: './images/music.png',
+                        body: "It's Just Testing Notification view that concert will happen less than 90 days",
+                    });
+                    notification.onclick = function () {
+                        window.open(`https://www.songkick.com/`);
+                    };
+                }
+            });
+        }
     }
 </script>
 <script src="app.js"></script>
